@@ -11,4 +11,4 @@ if "%2"=="" (
 ) else (
     set param2=%2
 )
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\comando.ps1" -FirstParam %param1% -SecondParam %param2%
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\jvm.ps1" -FirstParam %param1% -SecondParam %param2%
