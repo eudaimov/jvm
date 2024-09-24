@@ -1,5 +1,7 @@
 @echo off
 
+set "script_dir=%~dp0"
+
 if "%1"=="" (
     set param1=""
 ) else (
@@ -11,4 +13,6 @@ if "%2"=="" (
 ) else (
     set param2=%2
 )
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\jvm.ps1" -FirstParam %param1% -SecondParam %param2%
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%script_dir%jvm.ps1" -FirstParam %param1% -SecondParam %param2%
+
