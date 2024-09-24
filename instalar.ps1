@@ -7,7 +7,7 @@
 If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
 {
     # Relanzar el script con permisos de administrador
-    Start-Process powershell "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    Start-Process powershell "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs -WindowStyle Hidden
 #    -WindowStyle Hidden
     Exit
 }
@@ -25,6 +25,7 @@ Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/mai
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/instalar.exe' -OutFile "$directorioDescarga\instalar.exe" -UseBasicParsing
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/instalar.ps1' -OutFile "$directorioDescarga\instalar.ps1" -UseBasicParsing
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/README.md' -OutFile "$directorioDescarga\README.md" -UseBasicParsing
+Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/variablesEntorno.ps1' -OutFile "$directorioDescarga\variablesEntorno.ps1" -UseBasicParsing
 Write-Host "Archivos descargados en C:\Program Files\jvm" -ForegroundColor Green
 function instalar{
     $pathVariable = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")

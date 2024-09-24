@@ -10,9 +10,14 @@
 function list {
     $directorio = "C:/Program Files/Java"
     $directorioEnlaceSimbolico = $directorio+"/current";
-    $enlaceObjecto = Get-Item -Path $directorioEnlaceSimbolico
-    $enlace = $enlaceObjecto.Target
-    $versionCurrent = Split-Path -Path $enlace -Leaf
+    if (Test-Path -Path $directorioEnlaceSimbolico) {
+        $enlaceObjecto = Get-Item -Path $directorioEnlaceSimbolico
+        $enlace = $enlaceObjecto.Target
+        $versionCurrent = Split-Path -Path $enlace -Leaf
+    }else{
+        $enlace = $env:JAVA_HOME
+        $versionCurrent = Split-Path -Path $enlace -Leaf
+    }
 
     # Obtén todas las carpetas en el directorio actual
     $carpetas = Get-ChildItem -Directory -Path $directorio -Name | Where-Object { $_ -ne 'current' }
@@ -32,10 +37,20 @@ function current{
     $archivoRelease = "C:/Program Files/Java/current/release"
 
     # Lee el contenido del archivo
-    $contenido = Get-Content -Path $archivoRelease
+    if (Test-Path -Path $archivoRelease) {
+        $contenido = Get-Content -Path $archivoRelease
+    }else{
+           if((Test-Path env:JAVA_HOME) -and ($env:JAVA_HOME -ne "C:\Program Files\Java\current")){
+            $rutaJavaActivo = $env:JAVA_HOME
+            $archivoRelease = "$rutaJavaActivo\release"
+            $contenido = Get-Content -Path $archivoRelease
+        } else{
+            Write-Host "Deberias iniciar primero el progrma con con jvm init";
+            exit;
+        }
+    }
 
     # Busca la línea que contiene JAVA_VERSION
-
     foreach ($linea in $contenido) {
         if ($linea -match 'JAVA_RUNTIME_VERSION="(.+)"') {
             # Extrae y muestra la versión de Java
@@ -83,11 +98,10 @@ function use{
 }
 
 function init{
-    Write-Host "Entrando en Path"
     # Obtener la variable de entorno PATH
     $pathVariable = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
     $pathCurrent = "C:\Program Files\Java\current\bin"
-    $javaHome = "C:\Program Files\Java\current"
+    $javaHomeNew = "C:\Program Files\Java\current"
 
     # Dividir las rutas en una lista
     $pathList = $pathVariable -split ";"
@@ -108,39 +122,28 @@ function init{
     }
     $unionArray = $nuevoArrayPath -join";"
     $newVariablePath =$pathCurrent+";"+$unionArray;
+
     #Introduce las variables de entorno.
-    Read-Host "Se va a pedir permiso para modificar el PATH"
-    Start-Process -FilePath "powershell.exe" -ArgumentList @(
-        "-NoProfile",
-        "-Command",
-        "& {",
-        "`$newVariablePath = '$newVariablePath';",
-        "setx Path `$newVariablePath /M",
-        "}"
-    ) -Verb RunAs
+    Read-Host "Se va a pedir permiso para modificar el PATH";
+    & "variablesEntorno.ps1" -Variable "Path" -Valor $newVariablePath
 
     Read-Host "Se va a pedir permiso para modificar el JAVA_HOME"
-    Start-Process -FilePath "powershell.exe" -ArgumentList @(
-        "-NoProfile",
-        "-Command",
-        "& {",
-        "`$javaHome = '$javaHome';",
-        "setx JAVA_HOME `$javaHome /M",
-        "}"
-    ) -Verb RunAs
-
-
+    & "variablesEntorno.ps1" -Variable "JAVA_HOME" -Valor $javaHomeNew
 }
 function comandos{
     Write-Host "Los parametros que se pueden usar son:"
-    Write-Host "`t- jvn init Comando necesario para iniciar el jvm"
-    Write-Host "`t- jvn current version actual"
-    Write-Host "`t- jvn list Listado de todas las versiones de java que tienes instaladas"
-    Write-Host "`t- jvn use jdk-1.8 Dependiendo de las versiones que te aparecen en jvn list"
+    Write-Host "`t- jvm init Comando necesario para iniciar el jvm"
+    Write-Host "`t- jvm current version actual"
+    Write-Host "`t- jvm list Listado de todas las versiones de java que tienes instaladas"
+    Write-Host "`t- jvm use jdk-1.8 Dependiendo de las versiones que te aparecen en jvn list"
 }
 function default{
     Write-Host "Parametro no reconocido:" -ForegroundColor Red
     comandos
+}
+function test{
+    Write-Host "Entrando en Test"
+    & "variablesEntorno.ps1" -Variable "JAVA_HOME" -Valor "C:\Program Files\Java\current"
 }
 
 
@@ -164,8 +167,5 @@ switch($FirstParam){
         default
     }
 }
-
-
-
 # C:\Program Files\Common Files\Oracle\Java\javapath
 exit
