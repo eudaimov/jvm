@@ -24,6 +24,7 @@ Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/mai
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/jvm.bat' -OutFile "$directorioDescarga\jvm.bat" -UseBasicParsing
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/instalar.exe' -OutFile "$directorioDescarga\instalar.exe" -UseBasicParsing
 Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/instalar.ps1' -OutFile "$directorioDescarga\instalar.ps1" -UseBasicParsing
+Invoke-WebRequest 'https://raw.githubusercontent.com/eudaimov/jvm/refs/heads/main/README.md' -OutFile "$directorioDescarga\README.md" -UseBasicParsing
 Write-Host "Archivos descargados en C:\Program Files\jvm" -ForegroundColor Green
 function instalar{
     $pathVariable = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
